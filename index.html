@@ -1235,6 +1235,33 @@
   .student-redirect { margin:.9rem 0 0; padding:.7rem .85rem; border-radius:10px; background:#fdf2f8; color:#475569; font-size:.84rem; line-height:1.6; text-align:center; }
   .student-redirect a { color:var(--primary); font-weight:600; text-decoration:none; white-space:nowrap; }
   .student-redirect a:hover { text-decoration:underline; }
+  .security-note a { color:var(--primary); font-weight:600; text-decoration:none; }
+  /* เงื่อนไขรหัสผ่าน: เทา = ยังไม่พิมพ์ · เขียว = ผ่าน · แดง = ยังไม่ผ่าน */
+  .password-rules { display:flex; flex-wrap:wrap; gap:.3rem .9rem; font-size:.75rem; font-weight:400; color:var(--muted); }
+  .password-rule::before { content:"○"; margin-right:.3rem; }
+  .password-rule.ok { color:#15803d; }
+  .password-rule.ok::before { content:"✓"; }
+  .password-rule.no { color:#b91c1c; }
+  .password-rule.no::before { content:"✗"; }
+  .password-match { min-height:1.1em; font-size:.75rem; font-weight:400; }
+  .password-match.ok { color:#15803d; }
+  .password-match.no { color:#b91c1c; }
+  /* เมนูดาวน์โหลดในแถบเครื่องมือรายชื่อ */
+  .download-menu { position:relative; }
+  .download-menu > summary { list-style:none; display:inline-flex; align-items:center; gap:.4rem; cursor:pointer; white-space:nowrap; }
+  .download-menu > summary::-webkit-details-marker { display:none; }
+  .download-menu > summary .ui-icon { width:18px; height:18px; flex:0 0 18px; }
+  .download-menu[open] > summary { border-color:var(--primary); color:var(--primary); }
+  .download-menu[open] .download-caret { transform:rotate(180deg); }
+  .download-menu-panel { position:absolute; right:0; top:calc(100% + 6px); z-index:40; width:260px; padding:.45rem; border:1px solid var(--line); border-radius:12px; background:#fff; box-shadow:0 12px 28px rgba(15,23,42,.14); }
+  .download-menu-panel p { margin:.25rem .45rem .5rem; color:var(--muted); font-size:.76rem; line-height:1.5; }
+  .download-item { display:flex; align-items:center; gap:.55rem; width:100%; padding:.6rem .7rem; border:0; border-radius:8px; background:transparent; color:#1e293b; font-weight:600; text-align:left; cursor:pointer; }
+  .download-item:hover,.download-item:focus-visible { background:#fdf2f8; color:var(--primary); }
+  .download-item .ui-icon { width:18px; height:18px; flex:0 0 18px; }
+  @media (max-width:640px) {
+    .download-menu,.download-menu > summary { width:100%; justify-content:center; }
+    .download-menu-panel { left:0; right:0; width:auto; }
+  }
   </style>
 </head>
 
@@ -1406,7 +1433,7 @@
         <button id="registerTab" class="auth-tab" type="button" data-auth-target="registerPanel">ขอบัญชีเจ้าหน้าที่</button>
       </div>
       <p class="student-redirect">นักศึกษาที่ต้องการสมัครเรียน <a href="https://abhidham.mcu.ac.th/?page_id=1471" target="_blank" rel="noopener">สมัครเรียนออนไลน์ที่นี่ →</a></p>
-      <div class="security-note"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10.5" width="14" height="9.5" rx="1.5"/><path d="M8.5 10.5V7.5a3.5 3.5 0 0 1 7 0v3"/></svg> ระบบตรวจสอบสิทธิ์การเข้าถึงข้อมูลที่เซิร์ฟเวอร์ทุกครั้ง</div>
+      <div class="security-note">เข้าระบบไม่ได้? ติดต่อผู้ดูแลระบบ โทร <a href="tel:022243843">02-224-3843</a></div>
     </section>
   </main>
   <main id="appView" class="app-shell hidden">
@@ -1495,17 +1522,6 @@
         </div>
       </section>
 
-      <section class="download-panel" aria-labelledby="downloadTitle">
-        <div class="download-copy">
-          <h2 id="downloadTitle">ดาวน์โหลดรายชื่อ</h2>
-          <p id="downloadHelp">ทุกรายชื่อของสำนักและปีที่เลือก รวมทั้งที่ยืนยันแล้วและรอตรวจสอบ</p>
-        </div>
-        <div class="download-group" role="group" aria-label="เลือกรูปแบบไฟล์ดาวน์โหลด" aria-describedby="downloadHelp">
-          <button id="downloadXlsx" class="btn btn-excel download-button" type="button"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-4-4 4 4 4-4M4 16v5h16v-5"/></svg><span>ดาวน์โหลด Excel</span></button>
-          <button id="downloadCsv" class="btn btn-outline download-button download-csv" type="button"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-4-4 4 4 4-4M4 16v5h16v-5"/></svg><span>ดาวน์โหลด CSV</span></button>
-        </div>
-      </section>
-
       <section class="stats-grid" aria-label="สรุปข้อมูล">
         <article class="stat-card">
           <span class="stat-icon teal"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19.5c0-3 2.5-5 5.5-5s5.5 2 5.5 5"/><path d="M16 5.5a3 3 0 0 1 0 5.6"/><path d="M17.5 14.8c1.9.6 3 2.2 3 4.7"/></svg></span>
@@ -1543,6 +1559,15 @@
                 <option value="sheet">ตามลำดับในชีต</option>
               </select>
             </label>
+            <!-- ดาวน์โหลดเป็นงานรอง จึงย่อเหลือปุ่มเดียวในแถบเครื่องมือ ให้รายชื่อที่ต้องตรวจขึ้นมาอยู่สูงขึ้น -->
+            <details id="downloadMenu" class="download-menu">
+              <summary class="btn btn-outline download-trigger"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-4-4 4 4 4-4M4 16v5h16v-5"/></svg><span>ดาวน์โหลด</span><svg class="ui-icon download-caret" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></summary>
+              <div class="download-menu-panel" role="group" aria-label="เลือกรูปแบบไฟล์ดาวน์โหลด" aria-describedby="downloadHelp">
+                <p id="downloadHelp">ทุกรายชื่อของสำนักและปีที่เลือก รวมทั้งที่ยืนยันแล้วและรอตรวจสอบ</p>
+                <button id="downloadXlsx" class="download-item" type="button"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-4-4 4 4 4-4M4 16v5h16v-5"/></svg><span>Excel (.xlsx)</span></button>
+                <button id="downloadCsv" class="download-item" type="button"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-4-4 4 4 4-4M4 16v5h16v-5"/></svg><span>CSV</span></button>
+              </div>
+            </details>
           </div>
         </div>
         <!-- กันหน้าเด้งตอนแถบถูกปักไว้บนจอ: ช่องว่างนี้สูงเท่าแถบพอดีเฉพาะตอนที่ปัก
@@ -1616,7 +1641,7 @@
                 <select id="statsTermSelect" aria-label="เลือกเทอม"></select>
               </label>
               <button id="statsRefreshButton" class="btn btn-outline" type="button">โหลดข้อมูลใหม่</button>
-              <button id="statsClearCacheButton" class="btn btn-ghost btn-small" type="button">ล้างแคชทุกปี</button>
+              <button id="statsClearCacheButton" class="btn btn-ghost btn-small hidden" type="button" title="ใช้เมื่อแก้ไฟล์ผลสอบย้อนหลังหลายปี">ล้างแคชทุกปี</button>
             </div>
           </section>
 
@@ -1984,6 +2009,10 @@
       $('#loginForm').addEventListener('submit', onLogin);
       $('#registerForm').addEventListener('submit', onRegister);
       bindSchoolFilter();
+      attachPasswordHelp($('#registerForm'), 'password', 'confirmPassword');
+      attachPasswordHelp($('#resetForm'), 'newPassword', 'confirmPassword');
+      attachPasswordHelp($('#changePasswordForm'), 'newPassword', 'confirmPassword');
+      bindDownloadMenu();
       $('#forgotForm').addEventListener('submit', onForgotPassword);
       $('#resetForm').addEventListener('submit', onResetPassword);
       $('#logoutButton').addEventListener('click', onLogout);
@@ -3073,6 +3102,8 @@
       $('#homeSchoolName').textContent = user.role === 'admin'
         ? 'ภาพรวมข้อมูลทุกสำนักเรียน'
         : `สำนักเรียน: ${user.schoolName || 'ผู้ใช้งาน'}`;
+      // ปุ่มล้างแคชทุกปีเป็นงานดูแลระบบ เจ้าหน้าที่สำนักใช้ "โหลดข้อมูลใหม่" ก็พอ
+      $('#statsClearCacheButton')?.classList.toggle('hidden', user.role !== 'admin');
     }
 
     function enterApp(result) {
@@ -4281,6 +4312,76 @@
       });
       // ฟอร์มล้างค่าหลังส่งสำเร็จ แต่ event reset เกิดก่อนค่าถูกล้าง จึงรอให้ล้างเสร็จก่อนสร้างรายการเต็มคืน
       $('#registerForm')?.addEventListener('reset', () => setTimeout(renderSchoolOptions, 0));
+    }
+
+    /* ---- ตรวจรหัสผ่านขณะพิมพ์ ----
+       บอกทันทีว่าเงื่อนไขข้อไหนผ่านแล้ว และรหัสที่ยืนยันตรงกันหรือยัง ไม่ต้องรอกดส่งแล้วค่อยรู้ว่าผิด
+       เงื่อนไขต้องตรงกับ validatePassword_ ใน Code.gs (อย่างน้อย 8 ตัว มีตัวอักษรอังกฤษและตัวเลข
+       ตัวอักษรไทยอย่างเดียวไม่ผ่านเซิร์ฟเวอร์ จึงต้องบอกให้ชัดว่าเป็นภาษาอังกฤษ)
+       ข้อความสร้างด้วย JS จึงไม่ต้องแก้ HTML ของทั้งสามฟอร์ม */
+    const PASSWORD_RULES = [
+      ['อย่างน้อย 8 ตัวอักษร', value => value.length >= 8],
+      ['มีตัวอักษรภาษาอังกฤษ', value => /[A-Za-z]/.test(value)],
+      ['มีตัวเลข', value => /[0-9]/.test(value)]
+    ];
+
+    function attachPasswordHelp(form, passwordName, confirmName) {
+      if (!form) return;
+      const password = form.elements[passwordName];
+      const confirm = form.elements[confirmName];
+      if (!password || !confirm) return;
+      const rules = document.createElement('span');
+      rules.className = 'password-rules';
+      const items = PASSWORD_RULES.map(([label]) => {
+        const item = document.createElement('span');
+        item.className = 'password-rule';
+        item.textContent = label;
+        rules.appendChild(item);
+        return item;
+      });
+      const passwordField = password.closest('.field');
+      const oldHint = passwordField ? passwordField.querySelector(':scope > small') : null;
+      if (oldHint) oldHint.replaceWith(rules);
+      else if (passwordField) passwordField.appendChild(rules);
+      const match = document.createElement('small');
+      match.className = 'password-match';
+      match.setAttribute('aria-live', 'polite');
+      confirm.closest('.field')?.appendChild(match);
+
+      const update = () => {
+        const value = password.value;
+        PASSWORD_RULES.forEach(([, test], index) => {
+          items[index].classList.toggle('ok', Boolean(value) && test(value));
+          items[index].classList.toggle('no', Boolean(value) && !test(value));
+        });
+        const mismatch = Boolean(confirm.value) && confirm.value !== value;
+        // ให้เบราว์เซอร์กันการส่งฟอร์มเองด้วย ทั้งฟอร์มที่ใช้ reportValidity และฟอร์มที่ส่งแบบปกติ
+        confirm.setCustomValidity(mismatch ? 'รหัสผ่านที่ยืนยันยังไม่ตรงกัน' : '');
+        match.textContent = !confirm.value ? '' : (mismatch ? 'ยังไม่ตรงกับรหัสผ่านด้านบน' : 'รหัสผ่านตรงกัน');
+        match.classList.toggle('ok', Boolean(confirm.value) && !mismatch);
+        match.classList.toggle('no', mismatch);
+      };
+      password.addEventListener('input', update);
+      confirm.addEventListener('input', update);
+      form.addEventListener('reset', () => setTimeout(update, 0));
+    }
+
+    /* ---- เมนูดาวน์โหลด ----
+       ใช้ <details> จึงเปิดปิดได้แม้ JS พัง ส่วนนี้แค่ปิดเมนูเมื่อเลือกแล้ว คลิกข้างนอก หรือกด Esc */
+    function bindDownloadMenu() {
+      const menu = $('#downloadMenu');
+      if (!menu) return;
+      menu.querySelectorAll('.download-item').forEach(button => {
+        button.addEventListener('click', () => { menu.open = false; });
+      });
+      document.addEventListener('click', event => {
+        if (menu.open && !menu.contains(event.target)) menu.open = false;
+      });
+      menu.addEventListener('keydown', event => {
+        if (event.key !== 'Escape' || !menu.open) return;
+        menu.open = false;
+        menu.querySelector('summary').focus();
+      });
     }
 
     function ensurePostTransport() {
