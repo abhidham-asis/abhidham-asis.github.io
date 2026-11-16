@@ -1285,6 +1285,7 @@
   .grades-tools { display:flex; flex-wrap:nowrap; align-items:center; gap:.5rem; }
   .grades-tools input { flex:0 1 260px; width:260px; margin:0; }
   .grades-tools select { flex:0 0 auto; width:auto; min-width:9rem; margin:0; }
+  .grades-tools .download-menu { flex:0 0 auto; }
   .grades-table { min-width:620px; }
   .grades-table th, .grades-table td { text-align:left !important; }
   .grades-table th:last-child, .grades-table td:last-child { text-align:center !important; }
@@ -1816,6 +1817,14 @@
               <div class="grades-tools">
                 <input id="gradesSearch" type="search" placeholder="ค้นหาชื่อหรือรหัส" aria-label="ค้นหาชื่อหรือรหัสนักศึกษา">
                 <select id="gradesClassSelect" aria-label="กรองตามชั้น"></select>
+                <details id="gradesDownloadMenu" class="download-menu">
+                  <summary class="btn btn-outline download-trigger"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-4-4 4 4 4-4M4 16v5h16v-5"/></svg><span>ดาวน์โหลด</span><svg class="ui-icon download-caret" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></summary>
+                  <div class="download-menu-panel" role="group" aria-label="เลือกรูปแบบไฟล์ผลสอบ" aria-describedby="gradesDownloadHelp">
+                    <p id="gradesDownloadHelp">รายชื่อตามที่กำลังแสดง (เทอม ชั้น และคำค้นที่เลือกไว้) มีเฉพาะเกรด ไม่มีคะแนน</p>
+                    <button id="gradesDownloadXlsx" class="download-item" type="button"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-4-4 4 4 4-4M4 16v5h16v-5"/></svg><span>Excel (.xlsx)</span></button>
+                    <button id="gradesDownloadCsv" class="download-item" type="button"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-4-4 4 4 4-4M4 16v5h16v-5"/></svg><span>CSV</span></button>
+                  </div>
+                </details>
               </div>
             </div>
             <div class="stats-table-wrap">
@@ -2947,6 +2956,7 @@
       state.gradesRequest = (state.gradesRequest || 0) + 1;
       state.grades = null;
       state.gradesTerm = 0;
+      state.gradesShown = [];
       ['gradesSchoolSelect', 'gradesYearSelect', 'gradesTermSelect', 'gradesClassSelect', 'gradesBody'].forEach(id => {
         const element = $('#' + id);
         if (element) element.replaceChildren();
@@ -2970,6 +2980,8 @@
       });
       $('#gradesClassSelect').addEventListener('change', renderGrades);
       $('#gradesSearch').addEventListener('input', renderGrades);
+      $('#gradesDownloadXlsx').addEventListener('click', () => downloadGrades('xlsx'));
+      $('#gradesDownloadCsv').addEventListener('click', () => downloadGrades('csv'));
       $('#gradesRefreshButton').addEventListener('click', () =>
         loadGrades({year: current().year, school: current().school, refresh: true}));
     }
@@ -3004,6 +3016,157 @@
       } finally {
         if (isCurrent()) setLoading(false);
       }
+    }
+
+    /* ---- ดาวน์โหลดผลสอบ ----
+       สร้างไฟล์ในเบราว์เซอร์จากรายชื่อที่กำลังแสดง (ตามเทอม ชั้น และคำค้นที่เลือกไว้) ไม่ต้องเรียกเซิร์ฟเวอร์ซ้ำ
+       ข้อมูลในเครื่องมีแค่เกรดอยู่แล้ว (เซิร์ฟเวอร์ตัดคะแนนทิ้งตั้งแต่ต้น) ไฟล์จึงไม่มีคะแนนเช่นเดียวกับบนจอ
+       Excel เขียนเป็น .xlsx เองแบบไม่บีบอัด เพราะหน้านี้ฝังใน WordPress ด้วย จึงไม่พึ่งไลบรารีภายนอก */
+    const GRADE_OUTCOME_LABEL = {passed: 'ผ่าน', failed: 'ตก', absent: 'ขาดสอบ'};
+
+    function downloadGrades(format) {
+      const rows = state.gradesShown || [];
+      if (!state.grades || !rows.length) {
+        toast('ไม่มีรายชื่อให้ดาวน์โหลด', 'info');
+        return;
+      }
+      const table = [['ลำดับ', 'รหัสประจำตัว', 'ชื่อ - ฉายา/นามสกุล', 'ชั้น', 'เทอม', 'เกรด', 'ผลสอบ']].concat(
+        rows.map((row, index) => [index + 1, row.id || '', row.name, row.klass, row.term, row.grade,
+          GRADE_OUTCOME_LABEL[row.outcome] || '']));
+      const parts = ['ผลสอบ', state.grades.school, String(state.grades.year)];
+      if (state.gradesTerm) parts.push('เทอม' + state.gradesTerm);
+      if ($('#gradesClassSelect').value) parts.push($('#gradesClassSelect').value);
+      const fileName = parts.join('_').replace(/[\\/:*?"<>|]/g, '_') + '.' + format;
+      saveBlob(format === 'csv' ? csvBlob(table) : xlsxBlob(table, 'ผลสอบ ' + state.grades.year), fileName);
+      toast('ดาวน์โหลด ' + formatNumber(rows.length) + ' รายชื่อแล้ว', 'success');
+    }
+
+    function saveBlob(blob, fileName) {
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.download = fileName;
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
+    /** CSV แบบ UTF-8 มี BOM ให้ Excel อ่านภาษาไทยถูก และใส่ ' นำหน้าค่าที่ขึ้นต้นเหมือนสูตร กันสูตรถูกรันตอนเปิดไฟล์ */
+    function csvBlob(table) {
+      const cell = value => {
+        let text = String(value == null ? '' : value);
+        if (/^[=+\-@]/.test(text)) text = "'" + text;
+        return /[",\r\n]/.test(text) ? '"' + text.replace(/"/g, '""') + '"' : text;
+      };
+      return new Blob(['\uFEFF' + table.map(row => row.map(cell).join(',')).join('\r\n')],
+        {type: 'text/csv;charset=utf-8'});
+    }
+
+    /** .xlsx แผ่นเดียว: แถวหัวตัวหนา ตรึงแถวแรก ตัวเลขเป็นตัวเลข ข้อความ (รวมรหัสที่ขึ้นต้นด้วย 0) เป็นข้อความ */
+    function xlsxBlob(table, sheetName) {
+      const esc = text => String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '');
+      const head = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
+      const ns = 'http://schemas.openxmlformats.org/';
+      const rowsXml = table.map((row, r) => '<row r="' + (r + 1) + '">' + row.map((value, c) => {
+        const ref = String.fromCharCode(65 + c) + (r + 1);
+        const style = r === 0 ? ' s="1"' : '';
+        if (typeof value === 'number') return '<c r="' + ref + '"' + style + '><v>' + value + '</v></c>';
+        return '<c r="' + ref + '"' + style + ' t="inlineStr"><is><t xml:space="preserve">' + esc(value) + '</t></is></c>';
+      }).join('') + '</row>').join('');
+      const widths = [8, 16, 42, 14, 8, 10, 12];
+      const cols = '<cols>' + widths.map((width, i) =>
+        '<col min="' + (i + 1) + '" max="' + (i + 1) + '" width="' + width + '" customWidth="1"/>').join('') + '</cols>';
+      const rel = type => ns + 'officeDocument/2006/relationships/' + type;
+      const ct = type => 'application/vnd.openxmlformats-officedocument.spreadsheetml.' + type + '+xml';
+      const files = {
+        '[Content_Types].xml': head + '<Types xmlns="' + ns + 'package/2006/content-types">' +
+          '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>' +
+          '<Default Extension="xml" ContentType="application/xml"/>' +
+          '<Override PartName="/xl/workbook.xml" ContentType="' + ct('sheet.main') + '"/>' +
+          '<Override PartName="/xl/worksheets/sheet1.xml" ContentType="' + ct('worksheet') + '"/>' +
+          '<Override PartName="/xl/styles.xml" ContentType="' + ct('styles') + '"/></Types>',
+        '_rels/.rels': head + '<Relationships xmlns="' + ns + 'package/2006/relationships">' +
+          '<Relationship Id="rId1" Type="' + rel('officeDocument') + '" Target="xl/workbook.xml"/></Relationships>',
+        'xl/workbook.xml': head + '<workbook xmlns="' + ns + 'spreadsheetml/2006/main" xmlns:r="' + ns + 'officeDocument/2006/relationships">' +
+          '<sheets><sheet name="' + esc(String(sheetName).slice(0, 31)) + '" sheetId="1" r:id="rId1"/></sheets></workbook>',
+        'xl/_rels/workbook.xml.rels': head + '<Relationships xmlns="' + ns + 'package/2006/relationships">' +
+          '<Relationship Id="rId1" Type="' + rel('worksheet') + '" Target="worksheets/sheet1.xml"/>' +
+          '<Relationship Id="rId2" Type="' + rel('styles') + '" Target="styles.xml"/></Relationships>',
+        'xl/styles.xml': head + '<styleSheet xmlns="' + ns + 'spreadsheetml/2006/main">' +
+          '<fonts count="2"><font><sz val="11"/><name val="Tahoma"/></font><font><b/><sz val="11"/><name val="Tahoma"/></font></fonts>' +
+          '<fills count="2"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill></fills>' +
+          '<borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders>' +
+          '<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>' +
+          '<cellXfs count="2"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>' +
+          '<xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0" applyFont="1"/></cellXfs></styleSheet>',
+        'xl/worksheets/sheet1.xml': head + '<worksheet xmlns="' + ns + 'spreadsheetml/2006/main">' +
+          '<sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews>' +
+          cols + '<sheetData>' + rowsXml + '</sheetData></worksheet>'
+      };
+      return new Blob([zipStore(files)], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+    }
+
+    const CRC32_TABLE = (() => {
+      const table = new Uint32Array(256);
+      for (let n = 0; n < 256; n++) {
+        let c = n;
+        for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1;
+        table[n] = c >>> 0;
+      }
+      return table;
+    })();
+
+    function crc32(bytes) {
+      let c = 0xFFFFFFFF;
+      for (let i = 0; i < bytes.length; i++) c = CRC32_TABLE[(c ^ bytes[i]) & 255] ^ (c >>> 8);
+      return (c ^ 0xFFFFFFFF) >>> 0;
+    }
+
+    /** zip แบบเก็บเฉย ๆ ไม่บีบอัด (method 0) — ไฟล์ .xlsx คือ zip ที่มี XML ข้างใน */
+    function zipStore(files) {
+      const encoder = new TextEncoder();
+      const locals = [];
+      const centrals = [];
+      let offset = 0;
+      const names = Object.keys(files);
+      names.forEach(name => {
+        const nameBytes = encoder.encode(name);
+        const data = encoder.encode(files[name]);
+        const crc = crc32(data);
+        const local = new DataView(new ArrayBuffer(30));
+        local.setUint32(0, 0x04034b50, true);
+        local.setUint16(4, 20, true);
+        local.setUint16(6, 0x0800, true);   // ชื่อไฟล์เป็น UTF-8
+        local.setUint16(12, 0x21, true);    // วันที่ 1/1/1980 (ไม่สำคัญกับ Excel)
+        local.setUint32(14, crc, true);
+        local.setUint32(18, data.length, true);
+        local.setUint32(22, data.length, true);
+        local.setUint16(26, nameBytes.length, true);
+        locals.push(new Uint8Array(local.buffer), nameBytes, data);
+        const central = new DataView(new ArrayBuffer(46));
+        central.setUint32(0, 0x02014b50, true);
+        central.setUint16(4, 20, true);
+        central.setUint16(6, 20, true);
+        central.setUint16(8, 0x0800, true);
+        central.setUint16(14, 0x21, true);
+        central.setUint32(16, crc, true);
+        central.setUint32(20, data.length, true);
+        central.setUint32(24, data.length, true);
+        central.setUint16(28, nameBytes.length, true);
+        central.setUint32(42, offset, true);
+        centrals.push(new Uint8Array(central.buffer), nameBytes);
+        offset += 30 + nameBytes.length + data.length;
+      });
+      const centralSize = centrals.reduce((sum, part) => sum + part.length, 0);
+      const end = new DataView(new ArrayBuffer(22));
+      end.setUint32(0, 0x06054b50, true);
+      end.setUint16(8, names.length, true);
+      end.setUint16(10, names.length, true);
+      end.setUint32(12, centralSize, true);
+      end.setUint32(16, offset, true);
+      return new Blob(locals.concat(centrals, [new Uint8Array(end.buffer)]));
     }
 
     function gradesMessageRow(text) {
@@ -3067,6 +3230,7 @@
       const query = $('#gradesSearch').value.trim().toLowerCase();
       const shown = inClass.filter(row => !query ||
         row.name.toLowerCase().indexOf(query) !== -1 || String(row.id || '').indexOf(query) !== -1);
+      state.gradesShown = shown; // ไฟล์ดาวน์โหลดใช้ชุดเดียวกับที่เห็นบนจอ
       // คอลัมน์เทอมมีประโยชน์เฉพาะตอนดูรวมหลายเทอม
       $('#gradesTable').classList.toggle('hide-term', Boolean(state.gradesTerm) || terms.length < 2);
 
@@ -4649,18 +4813,18 @@
     /* ---- เมนูดาวน์โหลด ----
        ใช้ <details> จึงเปิดปิดได้แม้ JS พัง ส่วนนี้แค่ปิดเมนูเมื่อเลือกแล้ว คลิกข้างนอก หรือกด Esc */
     function bindDownloadMenu() {
-      const menu = $('#downloadMenu');
-      if (!menu) return;
-      menu.querySelectorAll('.download-item').forEach(button => {
-        button.addEventListener('click', () => { menu.open = false; });
-      });
-      document.addEventListener('click', event => {
-        if (menu.open && !menu.contains(event.target)) menu.open = false;
-      });
-      menu.addEventListener('keydown', event => {
-        if (event.key !== 'Escape' || !menu.open) return;
-        menu.open = false;
-        menu.querySelector('summary').focus();
+      $$('.download-menu').forEach(menu => {
+        menu.querySelectorAll('.download-item').forEach(button => {
+          button.addEventListener('click', () => { menu.open = false; });
+        });
+        document.addEventListener('click', event => {
+          if (menu.open && !menu.contains(event.target)) menu.open = false;
+        });
+        menu.addEventListener('keydown', event => {
+          if (event.key !== 'Escape' || !menu.open) return;
+          menu.open = false;
+          menu.querySelector('summary').focus();
+        });
       });
     }
 
