@@ -3067,7 +3067,9 @@
     function xlsxBlob(table, sheetName) {
       const esc = text => String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;').replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '');
-      const head = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
+      // ห้ามเขียนเครื่องหมายน้อยกว่าติดกับเครื่องหมายคำถามที่ไหนในไฟล์นี้ (รวมในคอมเมนต์)
+      // Apps Script ถือว่าคู่นั้นคือจุดเริ่มสคริปต์เล็ตตอนสร้างหน้า แล้วหน้าเว็บพังทั้งหน้า จึงต่อสตริงแยกกัน
+      const head = '<' + '?xml version="1.0" encoding="UTF-8" standalone="yes"?' + '>';
       const ns = 'http://schemas.openxmlformats.org/';
       const rowsXml = table.map((row, r) => '<row r="' + (r + 1) + '">' + row.map((value, c) => {
         const ref = String.fromCharCode(65 + c) + (r + 1);
