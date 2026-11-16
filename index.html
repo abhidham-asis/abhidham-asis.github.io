@@ -372,7 +372,7 @@
     .user-menu { width: 100%; justify-content: space-between; }
     .workspace-shell { display: block; }
     .app-sidebar { position: fixed; inset: auto 0 0 0; z-index: 40; padding: 0; }
-    .app-nav { grid-template-columns: repeat(4, 1fr); border: 0; border-top: 1px solid var(--line); box-shadow: 0 -4px 12px rgba(0,0,0,.08); }
+    .app-nav { grid-template-columns: repeat(5, 1fr); border: 0; border-top: 1px solid var(--line); box-shadow: 0 -4px 12px rgba(0,0,0,.08); }
     .app-nav-button { flex-direction: column; gap: .2rem; border-bottom: 0; padding: .5rem .2rem; font-size: .68rem; text-align: center; }
     .nav-icon { font-size: 1.1rem; }
     .workspace-main { padding-bottom: 64px; }
@@ -574,7 +574,7 @@
     .topbar { position:relative; }
     .workspace-shell { display:block; padding:0; }
     .app-sidebar { position:fixed; inset:auto 0 0; z-index:40; padding:0; }
-    .app-nav { grid-template-columns:repeat(4,minmax(0,1fr)); gap:.25rem; padding:.4rem max(.4rem,env(safe-area-inset-right)) calc(.4rem + env(safe-area-inset-bottom)) max(.4rem,env(safe-area-inset-left)); border:0; border-top:1px solid var(--line); border-radius:0; box-shadow:0 -8px 24px rgba(15,23,42,.1); }
+    .app-nav { grid-template-columns:repeat(5,minmax(0,1fr)); gap:.25rem; padding:.4rem max(.4rem,env(safe-area-inset-right)) calc(.4rem + env(safe-area-inset-bottom)) max(.4rem,env(safe-area-inset-left)); border:0; border-top:1px solid var(--line); border-radius:0; box-shadow:0 -8px 24px rgba(15,23,42,.1); }
     .app-nav-button { min-width:0; padding:.45rem .2rem; flex-direction:column; gap:.15rem; font-size:.7rem; text-align:center; }
     .app-nav-button:hover { transform:none; }
     .workspace-main { padding:0 .85rem 76px; }
@@ -1279,6 +1279,32 @@
     .download-menu,.download-menu > summary { width:100%; justify-content:center; }
     .download-menu-panel { left:0; right:0; width:auto; }
   }
+  /* ===== ผลสอบรายสำนัก ===== */
+  .module-card[data-open-module="grades"] { --card-accent:var(--accent-amber); --card-accent-soft:var(--accent-amber-soft); }
+  .grades-head { display:flex; align-items:flex-end; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
+  .grades-tools { display:flex; flex-wrap:nowrap; align-items:center; gap:.5rem; }
+  .grades-tools input { flex:0 1 260px; width:260px; margin:0; }
+  .grades-tools select { flex:0 0 auto; width:auto; min-width:9rem; margin:0; }
+  .grades-table { min-width:620px; }
+  .grades-table th, .grades-table td { text-align:left !important; }
+  .grades-table th:last-child, .grades-table td:last-child { text-align:center !important; }
+  .grades-table td:first-child { color:var(--muted); font-variant-numeric:tabular-nums; }
+  .grades-table td:nth-child(2) { font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .grades-table.hide-term .grades-term-col { display:none; }
+  .grades-empty { padding:2rem 1rem !important; color:var(--muted); text-align:center !important; }
+  /* ป้ายเกรดมีตัวอักษรกำกับเสมอ สีจึงเป็นแค่ตัวช่วย ไม่ใช่ทางเดียวที่บอกผล */
+  .grade-badge { display:inline-block; min-width:3.4rem; padding:.18rem .55rem; border:1px solid; border-radius:999px; font-size:.82rem; font-weight:700; text-align:center; white-space:nowrap; }
+  .grade-badge.passed { color:#15803d; border-color:#86efac; background:#f0fdf4; }
+  .grade-badge.failed { color:#b91c1c; border-color:#fca5a5; background:#fef2f2; }
+  .grade-badge.absent { color:#64748b; border-color:#cbd5e1; background:#f1f5f9; }
+  @media (max-width:640px) {
+    .grades-tools { flex-wrap:wrap; width:100%; }
+    .grades-tools input, .grades-tools select { flex:1 1 100%; width:100%; }
+    /* จอแคบ: เกรดต้องเห็นโดยไม่ต้องเลื่อนข้าง จึงซ่อนคอลัมน์รหัส (ยังค้นหาด้วยรหัสได้) */
+    .grades-table { min-width:0; }
+    .grades-table th:nth-child(2), .grades-table td:nth-child(2) { display:none; }
+    .grades-table th, .grades-table td { padding:.65rem .45rem !important; }
+  }
   </style>
 </head>
 
@@ -1478,6 +1504,7 @@
         <nav class="app-nav" aria-label="เมนูหลัก">
           <button class="app-nav-button active" type="button" data-module="home"><span class="nav-icon" aria-hidden="true"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5.5 9.5V20h13V9.5"/><path d="M10 20v-6h4v6"/></svg></span><span>หน้าหลัก</span></button>
           <button class="app-nav-button" type="button" data-module="applicants"><span class="nav-icon" aria-hidden="true"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19.5c0-3 2.5-5 5.5-5s5.5 2 5.5 5"/><path d="M16 5.5a3 3 0 0 1 0 5.6"/><path d="M17.5 14.8c1.9.6 3 2.2 3 4.7"/></svg></span><span>ผู้สมัคร</span></button>
+          <button class="app-nav-button" type="button" data-module="grades"><span class="nav-icon" aria-hidden="true"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 3.5h7.5l4 4v13h-11.5z"/><path d="M14 3.5v4h4"/><path d="m9.5 14 2 2 3.5-4"/></svg></span><span>ผลสอบ</span></button>
           <button class="app-nav-button" type="button" data-module="stats"><span class="nav-icon" aria-hidden="true"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V4"/><path d="M4 20h16"/><path d="M8 20v-5M12.5 20V9M17 20v-8"/></svg></span><span>สถิตินักศึกษา</span></button>
           <button class="app-nav-button" type="button" data-module="regstats"><span class="nav-icon" aria-hidden="true"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.5 4h7v3h-7z"/><path d="M8.5 5.5H5.5V20h13V5.5h-3"/><path d="M8.5 11.5h7M8.5 15h4.5"/></svg></span><span>สถิติการสมัคร</span></button>
         </nav>
@@ -1503,6 +1530,12 @@
               <h2>ดูชื่อผู้สมัคร</h2>
               <p>ตรวจสอบรายชื่อผู้สมัครออนไลน์และยืนยันข้อมูล</p>
               <span class="module-card-meta"><span>ทั้งหมด <strong id="homeApplicantTotal">0</strong></span><span>ใหม่ <strong id="homeApplicantPending">0</strong></span></span>
+            </button>
+            <button class="module-card" type="button" data-open-module="grades">
+              <span class="module-card-icon" aria-hidden="true"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 3.5h7.5l4 4v13h-11.5z"/><path d="M14 3.5v4h4"/><path d="m9.5 14 2 2 3.5-4"/></svg></span>
+              <h2>ผลสอบนักศึกษา</h2>
+              <p>ดูเกรดของนักศึกษาในสำนักเรียน แยกตามปีการศึกษา เทอม และชั้น</p>
+              <span class="module-card-meta"><span>เฉพาะเกรด</span><span class="home-card-go">เปิดดู →</span></span>
             </button>
             <button class="module-card" type="button" data-open-module="stats">
               <span class="module-card-icon" aria-hidden="true"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V4"/><path d="M4 20h16"/><path d="M8 20v-5M12.5 20V9M17 20v-8"/></svg></span>
@@ -1733,6 +1766,66 @@
           </section>
 
 
+        </section>
+
+        <section id="gradesModule" class="module-view module-content hidden">
+          <section class="page-heading">
+            <div>
+              <p class="eyebrow">ผลสอบ</p>
+              <h1>ผลสอบนักศึกษา</h1>
+              <p id="gradesSubtitle" class="muted">ดูเกรดของนักศึกษาในสำนักเรียน</p>
+            </div>
+            <div class="heading-actions">
+              <label id="gradesSchoolField" class="compact-field hidden">
+                <span>สำนักเรียน</span>
+                <select id="gradesSchoolSelect" aria-label="เลือกสำนักเรียน"></select>
+              </label>
+              <label class="compact-field">
+                <span>ปีการศึกษา</span>
+                <select id="gradesYearSelect" aria-label="เลือกปีการศึกษาของผลสอบ"></select>
+              </label>
+              <label class="compact-field">
+                <span>เทอม</span>
+                <select id="gradesTermSelect" aria-label="เลือกเทอมของผลสอบ"></select>
+              </label>
+              <button id="gradesRefreshButton" class="btn btn-outline" type="button">โหลดข้อมูลใหม่</button>
+            </div>
+          </section>
+
+          <section class="stats-grid" aria-label="สรุปผลสอบ">
+            <article class="stat-card">
+              <span class="stat-icon teal"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19.5c0-3 2.5-5 5.5-5s5.5 2 5.5 5"/><path d="M16 5.5a3 3 0 0 1 0 5.6"/><path d="M17.5 14.8c1.9.6 3 2.2 3 4.7"/></svg></span>
+              <div><small>มีรายชื่อสอบ</small><strong id="gradesTotal">0</strong></div>
+            </article>
+            <article class="stat-card">
+              <span class="stat-icon green"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7"/></svg></span>
+              <div><small>สอบผ่าน</small><strong id="gradesPassed">0</strong><span id="gradesPassedRate" class="stat-note"></span></div>
+            </article>
+            <article class="stat-card">
+              <span class="stat-icon amber"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg></span>
+              <div><small>สอบตก / ขาดสอบ</small><strong id="gradesNotPassed">0</strong><span id="gradesNotPassedNote" class="stat-note"></span></div>
+            </article>
+          </section>
+
+          <section class="stats-panel">
+            <div class="stats-panel-head grades-head">
+              <div>
+                <h2>รายชื่อและเกรด</h2>
+                <p class="muted">แสดงเฉพาะเกรด ไม่แสดงคะแนน</p>
+              </div>
+              <div class="grades-tools">
+                <input id="gradesSearch" type="search" placeholder="ค้นหาชื่อหรือรหัส" aria-label="ค้นหาชื่อหรือรหัสนักศึกษา">
+                <select id="gradesClassSelect" aria-label="กรองตามชั้น"></select>
+              </div>
+            </div>
+            <div class="stats-table-wrap">
+              <table id="gradesTable" class="stats-table grades-table">
+                <thead><tr><th>ลำดับ</th><th>รหัสประจำตัว</th><th>ชื่อ - ฉายา/นามสกุล</th><th>ชั้น</th><th class="grades-term-col">เทอม</th><th>เกรด</th></tr></thead>
+                <tbody id="gradesBody"></tbody>
+              </table>
+            </div>
+            <p id="gradesFootnote" class="stats-footnote muted"></p>
+          </section>
         </section>
 
         <section id="regstatsModule" class="module-view module-content hidden">
@@ -2141,6 +2234,7 @@
       $('#statsClearCacheButton').addEventListener('click', () => loadStats(state.statsYear, 'all'));
       $('#regStatsYearSelect').addEventListener('change', event => loadRegStats(Number(event.target.value)));
       $('#regStatsRefreshButton').addEventListener('click', () => loadRegStats(state.regStats ? state.regStats.year : 0, true));
+      bindGradesEvents();
       $('#detailConfirmButton').addEventListener('click', confirmSelectedRecord);
       $$('[data-close-dialog]').forEach(button => {
         button.addEventListener('click', () => $('#' + button.dataset.closeDialog).close());
@@ -2279,11 +2373,13 @@
       // สถิติอ่านชีตหลายพันแถว จึงโหลดตอนเปิดหน้านี้ครั้งแรกเท่านั้น ไม่โหลดพร้อมล็อกอิน
       if (name === 'stats' && !state.stats) loadStats();
       if (name === 'regstats' && !state.regStats) loadRegStats();
+      if (name === 'grades' && !state.grades) loadGrades();
     }
 
     /* ---- สถิตินักศึกษา: ยอดรวมรายปี แยกตามประเภทผู้เรียน ชั้น และเทอม ---- */
     function resetStatsState() {
       resetRegStatsState();
+      resetGradesState();
       state.statsRequest++;
       state.statsTrendRequest++;
       state.stats = null;
@@ -2842,6 +2938,168 @@
       $('#regStatsFootnote').textContent =
         'นับจากแท็บ “สมัคร” ของระบบรับสมัครออนไลน์ หนึ่งแถวต่อผู้สมัครหนึ่งคน · ปีการศึกษา = ปี พ.ศ. ของวันที่สมัคร' +
         (data.undated ? ' · มี ' + formatNumber(data.undated) + ' แถวที่อ่านวันที่สมัครไม่ได้ จึงไม่ถูกนับในปีใด' : '');
+    }
+
+    /* ---- ผลสอบรายสำนัก: รายชื่อกับเกรด (ไม่มีคะแนน) ----
+       เซิร์ฟเวอร์ส่งทุกเทอมของปีที่เลือกมาครั้งเดียว การเลือกเทอม ชั้น และค้นหาจึงคำนวณในเครื่องได้ทันที
+       ผู้ใช้สำนักได้เฉพาะสำนักของตัวเองเสมอ ช่องเลือกสำนักมีเฉพาะผู้ดูแลระบบ (data.schools ไม่เป็น null) */
+    function resetGradesState() {
+      state.gradesRequest = (state.gradesRequest || 0) + 1;
+      state.grades = null;
+      state.gradesTerm = 0;
+      ['gradesSchoolSelect', 'gradesYearSelect', 'gradesTermSelect', 'gradesClassSelect', 'gradesBody'].forEach(id => {
+        const element = $('#' + id);
+        if (element) element.replaceChildren();
+      });
+      ['gradesTotal', 'gradesPassed', 'gradesNotPassed'].forEach(id => { $('#' + id).textContent = '0'; });
+      ['gradesPassedRate', 'gradesNotPassedNote', 'gradesFootnote'].forEach(id => { $('#' + id).textContent = ''; });
+      $('#gradesSearch').value = '';
+      $('#gradesSchoolField').classList.add('hidden');
+      $('#gradesSubtitle').textContent = 'ดูเกรดของนักศึกษาในสำนักเรียน';
+    }
+
+    function bindGradesEvents() {
+      const current = () => state.grades || {};
+      $('#gradesSchoolSelect').addEventListener('change', event =>
+        loadGrades({year: current().year, school: event.target.value}));
+      $('#gradesYearSelect').addEventListener('change', event =>
+        loadGrades({year: Number(event.target.value), school: current().school}));
+      $('#gradesTermSelect').addEventListener('change', event => {
+        state.gradesTerm = Number(event.target.value) || 0;
+        renderGrades();
+      });
+      $('#gradesClassSelect').addEventListener('change', renderGrades);
+      $('#gradesSearch').addEventListener('input', renderGrades);
+      $('#gradesRefreshButton').addEventListener('click', () =>
+        loadGrades({year: current().year, school: current().school, refresh: true}));
+    }
+
+    async function loadGrades(options = {}) {
+      if (!state.sessionToken) return;
+      const token = state.sessionToken;
+      const request = state.gradesRequest = (state.gradesRequest || 0) + 1;
+      const isCurrent = () => token === state.sessionToken && request === state.gradesRequest;
+      setLoading(true, options.refresh ? 'กำลังอ่านผลสอบจากไฟล์ต้นทาง...' : 'กำลังโหลดผลสอบ...');
+      try {
+        const data = await server('getSchoolGrades', token, {
+          year: options.year || 0, school: options.school || '', refresh: Boolean(options.refresh)
+        });
+        if (!isCurrent()) return;
+        // เปลี่ยนสำนักหรือปีแล้ว ล้างตัวกรองที่ไม่เข้ากับข้อมูลชุดใหม่
+        if (!state.grades || state.grades.school !== data.school || state.grades.year !== data.year) {
+          $('#gradesSearch').value = '';
+          $('#gradesClassSelect').value = '';
+        }
+        state.grades = data;
+        renderGrades();
+        if (options.refresh) toast('อัปเดตผลสอบจากไฟล์ต้นทางแล้ว', 'success');
+      } catch (error) {
+        if (!isCurrent()) return;
+        // Apps Script ยังเป็นรุ่นก่อนมีเมนูนี้ — บอกให้ชัดแทนข้อความ "ไม่รู้จักคำสั่ง" ที่ผู้ใช้ไม่เข้าใจ
+        if (/ไม่รู้จักคำสั่ง/.test((error && error.message) || '')) {
+          $('#gradesBody').replaceChildren(gradesMessageRow('เมนูนี้ยังใช้ไม่ได้ ผู้ดูแลระบบต้องอัปเดต Code.gs ใน Apps Script ก่อน'));
+          return;
+        }
+        handleError(error);
+      } finally {
+        if (isCurrent()) setLoading(false);
+      }
+    }
+
+    function gradesMessageRow(text) {
+      const tr = document.createElement('tr');
+      const td = document.createElement('td');
+      td.colSpan = 6;
+      td.className = 'grades-empty';
+      td.textContent = text;
+      tr.appendChild(td);
+      return tr;
+    }
+
+    function fillSelect(select, items, value) {
+      select.replaceChildren(...items.map(item => {
+        const option = document.createElement('option');
+        option.value = String(item.value);
+        option.textContent = item.label;
+        return option;
+      }));
+      select.value = String(value);
+    }
+
+    function renderGrades() {
+      const data = state.grades;
+      if (!data) return;
+      const terms = data.terms || [];
+
+      $('#gradesSchoolField').classList.toggle('hidden', !data.schools);
+      if (data.schools) {
+        fillSelect($('#gradesSchoolSelect'), data.schools.map(name => ({value: name, label: name})), data.school);
+      }
+      fillSelect($('#gradesYearSelect'), (data.years || []).map(year => ({value: year, label: 'ปีการศึกษา ' + year})), data.year);
+      if (state.gradesTerm && !terms.some(term => term.term === state.gradesTerm)) state.gradesTerm = 0;
+      fillSelect($('#gradesTermSelect'),
+        [{value: 0, label: terms.length > 1 ? 'ทุกเทอม' : 'ทั้งปี'}].concat(terms.map(term => ({value: term.term, label: term.label}))),
+        state.gradesTerm);
+      $('#gradesTermSelect').disabled = terms.length < 2;
+
+      const inTerm = data.rows.filter(row => !state.gradesTerm || row.term === state.gradesTerm);
+      // ชั้นเรียงตามลำดับที่พบในไฟล์ผลสอบ ซึ่งเรียงจากชั้นต้นไปชั้นสูงอยู่แล้ว
+      const classes = [];
+      inTerm.forEach(row => { if (classes.indexOf(row.klass) === -1) classes.push(row.klass); });
+      const classSelect = $('#gradesClassSelect');
+      const wantedClass = classes.indexOf(classSelect.value) !== -1 ? classSelect.value : '';
+      fillSelect(classSelect, [{value: '', label: 'ทุกชั้น'}].concat(classes.map(name => ({value: name, label: name}))), wantedClass);
+
+      const inClass = inTerm.filter(row => !wantedClass || row.klass === wantedClass);
+      const counts = {total: inClass.length, passed: 0, failed: 0, absent: 0};
+      inClass.forEach(row => { counts[row.outcome] = (counts[row.outcome] || 0) + 1; });
+      $('#gradesTotal').textContent = formatNumber(counts.total);
+      $('#gradesPassed').textContent = formatNumber(counts.passed);
+      $('#gradesPassedRate').textContent = counts.total
+        ? (counts.passed * 100 / counts.total).toFixed(1) + '% ของผู้มีรายชื่อสอบ' : '';
+      $('#gradesNotPassed').textContent = formatNumber(counts.failed + counts.absent);
+      $('#gradesNotPassedNote').textContent = counts.total
+        ? 'สอบตก ' + formatNumber(counts.failed) + ' · ขาดสอบ ' + formatNumber(counts.absent) : '';
+
+      const termLabel = state.gradesTerm ? 'เทอม ' + state.gradesTerm : (terms.length > 1 ? 'ทุกเทอม' : 'ทั้งปี');
+      $('#gradesSubtitle').textContent = data.school + ' • ปีการศึกษา ' + data.year + ' • ' + termLabel;
+
+      const query = $('#gradesSearch').value.trim().toLowerCase();
+      const shown = inClass.filter(row => !query ||
+        row.name.toLowerCase().indexOf(query) !== -1 || String(row.id || '').indexOf(query) !== -1);
+      // คอลัมน์เทอมมีประโยชน์เฉพาะตอนดูรวมหลายเทอม
+      $('#gradesTable').classList.toggle('hide-term', Boolean(state.gradesTerm) || terms.length < 2);
+
+      const body = $('#gradesBody');
+      if (!shown.length) {
+        body.replaceChildren(gradesMessageRow(data.rows.length
+          ? 'ไม่พบรายชื่อที่ตรงกับตัวกรอง'
+          : 'ไม่พบผลสอบของ ' + data.school + ' ในปีการศึกษา ' + data.year));
+      } else {
+        body.replaceChildren(...shown.map((row, index) => {
+          const tr = document.createElement('tr');
+          const cells = [formatNumber(index + 1), row.id || '—', row.name, row.klass, 'เทอม ' + row.term];
+          cells.forEach((value, cellIndex) => {
+            const td = document.createElement('td');
+            td.textContent = value;
+            if (cellIndex === 4) td.className = 'grades-term-col';
+            if (cellIndex === 1 && !row.id) td.classList.add('stats-empty');
+            tr.appendChild(td);
+          });
+          const gradeCell = document.createElement('td');
+          const badge = document.createElement('span');
+          badge.className = 'grade-badge ' + row.outcome;
+          badge.textContent = row.grade;
+          gradeCell.appendChild(badge);
+          tr.appendChild(gradeCell);
+          return tr;
+        }));
+      }
+
+      $('#gradesFootnote').textContent =
+        'เกรด D ขึ้นไป = สอบผ่าน · F = สอบตก · ข้อมูลจากไฟล์รวมผลสอบ' +
+        (data.generatedAt ? ' ณ ' + data.generatedAt : '') +
+        ((data.unreadable || []).length ? ' · อ่านแท็บ ' + data.unreadable.join(', ') + ' ไม่ได้ ผลสอบเทอมนั้นจึงไม่แสดง' : '');
     }
 
     function statsRate(counts) {
@@ -4231,6 +4489,11 @@
           return { sessionToken: args[0], year: args[1].year, refresh: args[1].refresh ? 'true' : '' };
         case 'getStudentStats':
           return { sessionToken: args[0], year: args[1].year, refresh: args[1].refresh };
+        case 'getSchoolGrades':
+          return {
+            sessionToken: args[0], year: args[1].year || '', school: args[1].school || '',
+            refresh: args[1].refresh ? 'true' : ''
+          };
         case 'getDashboard':
           return {
             sessionToken: args[0], scopeRef: args[1].scopeRef,
