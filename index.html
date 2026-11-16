@@ -1227,6 +1227,14 @@
   .auth-brand h1 { line-height:1.3; }
   .auth-content .btn-primary { min-height:48px; font-size:.95rem; box-shadow:0 8px 18px rgba(190,24,93,.2) !important; }
   .security-note { margin-top:1.1rem !important; padding-top:1rem; border-top:1px solid var(--line); }
+  /* ชื่ออังกฤษเป็นบรรทัดรองใต้ชื่อไทย */
+  .brand-en { margin:.25rem 0 0; color:var(--muted); font-size:.72rem; letter-spacing:.01em; }
+  /* ช่องค้นหาสำนักวางชิดกับ dropdown ให้อ่านเป็นชุดเดียวกัน */
+  .school-filter { margin-bottom:-.1rem; }
+  /* ทางไปหน้าสมัครเรียนสำหรับนักศึกษาที่เข้ามาผิดหน้า */
+  .student-redirect { margin:.9rem 0 0; padding:.7rem .85rem; border-radius:10px; background:#fdf2f8; color:#475569; font-size:.84rem; line-height:1.6; text-align:center; }
+  .student-redirect a { color:var(--primary); font-weight:600; text-decoration:none; white-space:nowrap; }
+  .student-redirect a:hover { text-decoration:underline; }
   </style>
 </head>
 
@@ -1244,8 +1252,9 @@
       <div class="auth-brand">
         <div class="auth-logo" id="brandLogo" aria-hidden="true">อ</div>
         <div>
-          <h1 id="authTitle">Abhidhamma Student Information System - ASIS</h1>
+          <h1 id="authTitle">ระบบสารสนเทศนักศึกษา (ASIS)</h1>
           <p class="brand-sub">อภิธรรมโชติกะวิทยาลัย<br>มหาวิทยาลัยมหาจุฬาลงกรณราชวิทยาลัย</p>
+          <p class="brand-en" lang="en">Abhidhamma Student Information System</p>
         </div>
       </div>
 
@@ -1253,7 +1262,7 @@
         <form id="loginForm" novalidate>
           <label class="field">
             <span>ชื่อผู้ใช้หรืออีเมล</span>
-            <input id="loginId" name="login" autocomplete="username" placeholder="username@example.com" required>
+            <input id="loginId" name="login" autocomplete="username" placeholder="ชื่อผู้ใช้ หรือ อีเมล" required>
           </label>
           <label class="field">
             <span>รหัสผ่าน</span>
@@ -1269,8 +1278,8 @@
 
       <div id="registerPanel" class="auth-content hidden">
         <div class="section-heading">
-          <h2>สมัครสมาชิก</h2>
-          <p>บัญชีใหม่จะเข้าใช้งานได้หลังผู้ดูแลตรวจสอบและอนุมัติ</p>
+          <h2>ขอบัญชีเจ้าหน้าที่สำนักเรียน</h2>
+          <p>สำหรับเจ้าหน้าที่ที่ดูแลรายชื่อผู้สมัครของสำนัก บัญชีใหม่จะเข้าใช้งานได้หลังผู้ดูแลตรวจสอบและอนุมัติ</p>
         </div>
         <form id="registerForm" novalidate>
           <div class="form-two-columns">
@@ -1283,8 +1292,10 @@
               <input name="email" type="email" maxlength="200" autocomplete="email" required>
             </label>
           </div>
-          <label class="field">
-            <span>ชื่อสำนักเรียน</span>
+          <div class="field">
+            <label for="schoolSelect">ชื่อสำนักเรียน</label>
+            <input id="schoolFilter" class="school-filter" type="search" autocomplete="off" enterkeyhint="search"
+                   placeholder="พิมพ์บางส่วนของชื่อเพื่อค้นหา เช่น จันทร" aria-label="ค้นหาชื่อสำนักเรียน" aria-controls="schoolSelect">
             <select id="schoolSelect" name="schoolName" required>
               <option value="">— เลือกสำนักเรียน —</option>
               <option value="อภิธรรมโชติกะวิทยาลัย (ส่วนกลาง)">อภิธรรมโชติกะวิทยาลัย (ส่วนกลาง)</option>
@@ -1339,8 +1350,8 @@
               <option value="วัดอุดมมงคล">วัดอุดมมงคล</option>
               <option value="ห้องเรียนฯ วัดอุบลวนาราม">ห้องเรียนฯ วัดอุบลวนาราม</option>
             </select>
-            <small>แต่ละสำนักมีบัญชีที่อนุมัติแล้วได้ไม่เกิน 3 บัญชี</small>
-          </label>
+            <small id="schoolFilterInfo">แต่ละสำนักมีบัญชีที่อนุมัติแล้วได้ไม่เกิน 3 บัญชี</small>
+          </div>
           <label class="field">
             <span>รหัสผ่าน</span>
             <span class="password-wrap">
@@ -1353,7 +1364,7 @@
             <span>ยืนยันรหัสผ่าน</span>
             <input name="confirmPassword" type="password" minlength="8" autocomplete="new-password" required>
           </label>
-          <button class="btn btn-primary btn-block" type="submit">ส่งคำขอสมัครสมาชิก</button>
+          <button class="btn btn-primary btn-block" type="submit">ส่งคำขอเปิดบัญชี</button>
         </form>
       </div>
 
@@ -1392,8 +1403,9 @@
 
       <div class="auth-tabs" role="tablist" aria-label="เลือกวิธีเข้าใช้งาน">
         <button id="loginTab" class="auth-tab active" type="button" data-auth-target="loginPanel">เข้าสู่ระบบ</button>
-        <button id="registerTab" class="auth-tab" type="button" data-auth-target="registerPanel">สมัครสมาชิก</button>
+        <button id="registerTab" class="auth-tab" type="button" data-auth-target="registerPanel">ขอบัญชีเจ้าหน้าที่</button>
       </div>
+      <p class="student-redirect">นักศึกษาที่ต้องการสมัครเรียน <a href="https://abhidham.mcu.ac.th/?page_id=1471" target="_blank" rel="noopener">สมัครเรียนออนไลน์ที่นี่ →</a></p>
       <div class="security-note"><svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10.5" width="14" height="9.5" rx="1.5"/><path d="M8.5 10.5V7.5a3.5 3.5 0 0 1 7 0v3"/></svg> ระบบตรวจสอบสิทธิ์การเข้าถึงข้อมูลที่เซิร์ฟเวอร์ทุกครั้ง</div>
     </section>
   </main>
@@ -1402,8 +1414,8 @@
       <div class="topbar-brand">
         <div class="mini-mark" id="brandMark">✓</div>
         <div>
-          <strong id="appNameTopbar">Abhidhamma Student Information System - ASIS</strong>
-          <small>Student Verification Portal</small>
+          <strong id="appNameTopbar">ระบบสารสนเทศนักศึกษา ASIS</strong>
+          <small>อภิธรรมโชติกะวิทยาลัย</small>
         </div>
       </div>
       <div class="user-menu">
@@ -1852,6 +1864,7 @@
       statsTrendLoading: false
     };
     let transportCheckPromise = null;
+    let schoolChoices = null; // รายชื่อสำนักเต็ม {value, label} ที่ช่องค้นหาใช้กรอง
 
     const $ = (selector, root = document) => root.querySelector(selector);
     const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
@@ -1970,6 +1983,7 @@
 
       $('#loginForm').addEventListener('submit', onLogin);
       $('#registerForm').addEventListener('submit', onRegister);
+      bindSchoolFilter();
       $('#forgotForm').addEventListener('submit', onForgotPassword);
       $('#resetForm').addEventListener('submit', onResetPassword);
       $('#logoutButton').addEventListener('click', onLogout);
@@ -2121,7 +2135,7 @@
         toast('รหัสผ่านและการยืนยันรหัสผ่านไม่ตรงกัน', 'error');
         return;
       }
-      setLoading(true, 'กำลังส่งคำขอสมัครสมาชิก...');
+      setLoading(true, 'กำลังส่งคำขอเปิดบัญชี...');
       try {
         const result = await server('register', {
           username: data.username,
@@ -4200,20 +4214,73 @@
        ถ้าดึงไม่สำเร็จ ตัวเลือกที่ฝังมากับหน้ายังใช้สมัครได้ตามเดิม */
     function applySchoolOptions(schools) {
       if (!Array.isArray(schools)) return;
+      schoolChoices = schools.map(name => ({ value: name, label: name }));
+      renderSchoolOptions();
+    }
+
+    /* ---- ช่องค้นหาสำนักเรียน ----
+       สร้าง option ใหม่จากรายการเต็มทุกครั้ง แทนการซ่อน option ที่ไม่ตรง
+       เพราะ Safari บน iPhone ไม่ยอมซ่อน option ในรายการ
+       ก่อนเทียบ: แยก "ำ" เป็น นิคหิต+า และตัดวรรณยุกต์กับช่องว่างทิ้ง
+       เพราะชื่อในชีตบางชื่อพิมพ์ลำดับอักขระต่างจากที่คนทั่วไปพิมพ์ เช่น "รํ่า" (ํ ่ า) กับ "ร่ำ" (่ ำ) */
+    function normalizeSchoolText(text) {
+      return String(text || '')
+        .replace(/ำ/g, 'ํา')
+        .replace(/[่-๋\s]/g, '')
+        .toLowerCase();
+    }
+
+    function renderSchoolOptions() {
       const select = $('#schoolSelect');
       if (!select) return;
+      if (!schoolChoices) {
+        // ยังดึงรายชื่อจากชีตไม่ได้ ใช้ตัวเลือกที่ฝังมากับหน้าเป็นรายการเต็ม
+        schoolChoices = Array.from(select.options)
+          .filter(option => option.value)
+          .map(option => ({ value: option.value, label: option.textContent }));
+      }
+      const filter = $('#schoolFilter');
+      const query = normalizeSchoolText(filter ? filter.value : '');
       const current = select.value;
+      const matches = query
+        ? schoolChoices.filter(school =>
+            normalizeSchoolText(school.label).includes(query) || normalizeSchoolText(school.value).includes(query))
+        : schoolChoices;
       const placeholder = document.createElement('option');
       placeholder.value = '';
-      placeholder.textContent = '— เลือกสำนักเรียน —';
-      select.replaceChildren(placeholder, ...schools.map(name => {
+      placeholder.textContent = !query ? '— เลือกสำนักเรียน —'
+        : matches.length ? '— พบ ' + matches.length + ' สำนัก เลือกจากรายการนี้ —'
+        : '— ไม่พบสำนักที่ตรงกับคำค้น —';
+      select.replaceChildren(placeholder, ...matches.map(school => {
         const option = document.createElement('option');
-        option.value = name;
-        option.textContent = name;
+        option.value = school.value;
+        option.textContent = school.label;
         return option;
       }));
-      // สำนักที่เลือกค้างไว้อาจถูกปิดรับสมัครไปแล้ว ถอยกลับไปช่องว่างให้เลือกใหม่
-      select.value = schools.indexOf(current) === -1 ? '' : current;
+      // ค้นแล้วเหลือสำนักเดียวเลือกให้เลย ส่วนสำนักที่เลือกค้างไว้แต่ไม่อยู่ในรายการแล้ว
+      // (ถูกกรองออกหรือถูกปิดรับสมัคร) ถอยกลับไปช่องว่างให้เลือกใหม่
+      if (query && matches.length === 1) select.value = matches[0].value;
+      else select.value = matches.some(school => school.value === current) ? current : '';
+      const info = $('#schoolFilterInfo');
+      if (info) {
+        info.textContent = query && !matches.length
+          ? 'ลองพิมพ์ให้สั้นลง เช่น ชื่อวัดเพียงบางส่วน'
+          : 'แต่ละสำนักมีบัญชีที่อนุมัติแล้วได้ไม่เกิน 3 บัญชี';
+      }
+    }
+
+    function bindSchoolFilter() {
+      const filter = $('#schoolFilter');
+      if (!filter) return;
+      filter.addEventListener('input', renderSchoolOptions);
+      // Enter ในช่องค้นหาไม่ต้องส่งฟอร์ม ให้ย้ายไปที่รายการสำนักแทน
+      filter.addEventListener('keydown', event => {
+        if (event.key !== 'Enter') return;
+        event.preventDefault();
+        $('#schoolSelect')?.focus();
+      });
+      // ฟอร์มล้างค่าหลังส่งสำเร็จ แต่ event reset เกิดก่อนค่าถูกล้าง จึงรอให้ล้างเสร็จก่อนสร้างรายการเต็มคืน
+      $('#registerForm')?.addEventListener('reset', () => setTimeout(renderSchoolOptions, 0));
     }
 
     function ensurePostTransport() {
