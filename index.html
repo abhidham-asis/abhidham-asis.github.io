@@ -3363,9 +3363,7 @@
       (source.gradeWarnings || []).forEach(warning => {
         messages.push(`แท็บ ${warning.sheetName}: นับได้ ${formatNumber(warning.total)} คนแต่เป็น “ขาดสอบ” ทั้งหมด — คอลัมน์เกรดน่าจะชี้ผิดช่อง`);
       });
-      if ((source.skipped || []).length) {
-        messages.push(`ข้ามแท็บที่ชื่อไม่ใช่เลข 4 หลัก ${source.skipped.length} แท็บ: ${source.skipped.join(', ')}`);
-      }
+      // ไม่แจ้งแท็บที่ข้ามเพราะชื่อไม่ใช่ปี (logs, accounts ฯลฯ) — เป็นแท็บระบบที่ตั้งใจไม่นับอยู่แล้ว ไม่ใช่ข้อมูลขาด
       if (data.unknownSchoolCount) {
         const sample = (data.unknownSchools || []).slice(0, 5).map(name => `“${name}”`).join(' · ');
         messages.push(`ชื่อสำนักที่จับเข้ารายชื่อทางการไม่ได้ ${formatNumber(data.unknownSchoolCount)} ชื่อ จึงไม่ถูกนับในยอดสำนักเรียน${sample ? ' เช่น ' + sample : ''}`);
